@@ -30,7 +30,7 @@ public class Or extends Operation
         
         this.leftOperand = left;
         this.rightOperand = right;
-        
+
         stack.push(this);
  
         return i;

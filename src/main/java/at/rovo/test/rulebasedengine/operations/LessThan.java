@@ -10,17 +10,17 @@ import at.rovo.test.rulebasedengine.type.Variable;
 import java.util.Map;
 import java.util.Stack;
 
-public class LessEquals extends Operation
+public class LessThan extends Operation
 {    
-    public LessEquals()
+    public LessThan()
     {
         super("<=");
     }
     
     @Override
-    public LessEquals copy()
+    public LessThan copy()
     {
-        return new LessEquals();
+        return new LessThan();
     }
     
     @Override

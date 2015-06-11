@@ -30,9 +30,19 @@ public class And extends Operation
         
         this.leftOperand = left;
         this.rightOperand = right;
-        
-        stack.push(this);
- 
+
+        if(left instanceof Or)
+        {
+            Or or = (Or)left;
+            this.leftOperand = or.rightOperand;
+            or.rightOperand = this;
+            stack.push(or);
+        }
+        else
+        {
+            stack.push(this);
+        }
+
         return i;
     }
     

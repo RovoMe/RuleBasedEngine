@@ -7,9 +7,9 @@ import at.rovo.test.rulebasedengine.operations.And;
 import at.rovo.test.rulebasedengine.operations.Or;
 import at.rovo.test.rulebasedengine.operations.Equals;
 import at.rovo.test.rulebasedengine.operations.Less;
-import at.rovo.test.rulebasedengine.operations.LessEquals;
-import at.rovo.test.rulebasedengine.operations.More;
-import at.rovo.test.rulebasedengine.operations.MoreEquals;
+import at.rovo.test.rulebasedengine.operations.LessThan;
+import at.rovo.test.rulebasedengine.operations.Greater;
+import at.rovo.test.rulebasedengine.operations.GreaterThan;
 import at.rovo.test.rulebasedengine.operations.Not;
 import at.rovo.test.rulebasedengine.operations.NotEquals;
 import java.util.HashMap;
@@ -33,9 +33,9 @@ public class Main
         operations.registerOperation(new Equals(), "EQUALS");
         operations.registerOperation(new Not());
         operations.registerOperation(new Less());
-        operations.registerOperation(new More());
-        operations.registerOperation(new LessEquals());
-        operations.registerOperation(new MoreEquals());
+        operations.registerOperation(new Greater());
+        operations.registerOperation(new LessThan());
+        operations.registerOperation(new GreaterThan());
         operations.registerOperation(new NotEquals());
 
         // define the possible actions for rules that fire

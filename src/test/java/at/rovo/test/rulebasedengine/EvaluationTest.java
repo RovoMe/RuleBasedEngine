@@ -4,9 +4,9 @@ import at.rovo.test.rulebasedengine.dispatcher.ActionDispatcher;
 import at.rovo.test.rulebasedengine.operations.And;
 import at.rovo.test.rulebasedengine.operations.Equals;
 import at.rovo.test.rulebasedengine.operations.Less;
-import at.rovo.test.rulebasedengine.operations.LessEquals;
-import at.rovo.test.rulebasedengine.operations.More;
-import at.rovo.test.rulebasedengine.operations.MoreEquals;
+import at.rovo.test.rulebasedengine.operations.LessThan;
+import at.rovo.test.rulebasedengine.operations.Greater;
+import at.rovo.test.rulebasedengine.operations.GreaterThan;
 import at.rovo.test.rulebasedengine.operations.Not;
 import at.rovo.test.rulebasedengine.operations.NotEquals;
 import at.rovo.test.rulebasedengine.operations.Or;
@@ -31,9 +31,9 @@ public class EvaluationTest
         operations.registerOperation(new Equals(), "EQUALS");
         operations.registerOperation(new Not());
         operations.registerOperation(new Less());
-        operations.registerOperation(new More());
-        operations.registerOperation(new LessEquals());
-        operations.registerOperation(new MoreEquals());
+        operations.registerOperation(new Greater());
+        operations.registerOperation(new LessThan());
+        operations.registerOperation(new GreaterThan());
         operations.registerOperation(new NotEquals());
     }
     
@@ -182,5 +182,119 @@ public class EvaluationTest
         assertThat(triggered, is(equalTo(false)));
         assertThat(outcome, is(equalTo(null)));
         assertThat(rules.getFiredRule(), is(equalTo(null)));
+    }
+
+    @Test
+    public void fistRuleFiresWins() throws Exception {
+
+        Rule rule1 = new Rule.Builder()
+                .withName("rule1")
+                .withExpression("PATIENT_TYPE = 'A' AND ADMISSION_TYPE = 'O'")
+                .withDispatcher(outPatient)
+                .build();
+        Rule rule2 = new Rule.Builder()
+                .withName("rule2")
+                .withExpression("PATIENT_TYPE = 'B'")
+                .withDispatcher(inPatient)
+                .build();
+        Rule rule3 = new Rule.Builder()
+                .withName("rule3")
+                .withExpression("PATIENT_TYPE = 'A' AND NOT ADMISSION_TYPE = 'O'")
+                .withDispatcher(inPatient)
+                .build();
+        Rule rule4 = new Rule.Builder()
+                .withName("rule4")
+                .withExpression("PATIENT_TYPE != 'B' AND TEST_VALUE >= 5")
+                .withExpression("PATIENT_TYPE != 'A' OR TEST_VALUE < 5")
+                .withDispatcher(outPatient)
+                .build();
+
+        Rules rules = new Rules();
+        rules.addRule(rule1);
+        rules.addRule(rule2);
+        rules.addRule(rule3);
+        rules.addRule(rule4);
+
+        Map<String, Object> bindings = new HashMap<>();
+        bindings.put("PATIENT_TYPE", "'A'");
+        bindings.put("ADMISSION_TYPE", "'O'");
+        bindings.put("TEST_VALUE", 5);
+
+        // ... and evaluate the defined rules with the specified bindings
+        boolean triggered = rules.eval(bindings);
+
+        assertThat(triggered, is(equalTo(true)));
+        assertThat(outcome, is(equalTo("outPatient")));
+        assertThat(rules.getFiredRule(), is(equalTo(rule1)));
+    }
+
+    @Test
+    public void respectsBindingStrength() throws Exception {
+        Rule rule1 = new Rule.Builder()
+                .withName("rule1")
+                .withExpression("PATIENT_TYPE = 'A' OR PATIENT_TYPE = 'C' AND NOT ADMISSION_TYPE = 'O'")
+                .withDispatcher(outPatient)
+                .build();
+        Rule rule2 = new Rule.Builder()
+                .withName("rule2")
+                .withExpression("PATIENT_TYPE = 'B'")
+                .withDispatcher(inPatient)
+                .build();
+        Rule rule3 = new Rule.Builder()
+                .withName("rule3")
+                .withExpression("PATIENT_TYPE = 'A' AND ADMISSION_TYPE = 'O'")
+                .withDispatcher(inPatient)
+                .build();
+
+        Rules rules = new Rules();
+        rules.addRule(rule1);
+        rules.addRule(rule2);
+        rules.addRule(rule3);
+
+        Map<String, Object> bindings = new HashMap<>();
+        bindings.put("PATIENT_TYPE", "'A'");
+        bindings.put("ADMISSION_TYPE", "'O'");
+
+        // ... and evaluate the defined rules with the specified bindings
+        boolean triggered = rules.eval(bindings);
+
+        assertThat(triggered, is(equalTo(true)));
+        assertThat(outcome, is(equalTo("outPatient")));
+        assertThat(rules.getFiredRule(), is(equalTo(rule1)));
+    }
+
+    @Test
+    public void respectsBindingStrength2() throws Exception {
+        Rule rule1 = new Rule.Builder()
+                .withName("rule1")
+                .withExpression("NOT ADMISSION_TYPE = 'O' AND PATIENT_TYPE = 'C' OR PATIENT_TYPE = 'A'")
+                .withDispatcher(outPatient)
+                .build();
+        Rule rule2 = new Rule.Builder()
+                .withName("rule2")
+                .withExpression("PATIENT_TYPE = 'B'")
+                .withDispatcher(inPatient)
+                .build();
+        Rule rule3 = new Rule.Builder()
+                .withName("rule3")
+                .withExpression("PATIENT_TYPE = 'A' AND ADMISSION_TYPE = 'O'")
+                .withDispatcher(inPatient)
+                .build();
+
+        Rules rules = new Rules();
+        rules.addRule(rule1);
+        rules.addRule(rule2);
+        rules.addRule(rule3);
+
+        Map<String, Object> bindings = new HashMap<>();
+        bindings.put("PATIENT_TYPE", "'A'");
+        bindings.put("ADMISSION_TYPE", "'O'");
+
+        // ... and evaluate the defined rules with the specified bindings
+        boolean triggered = rules.eval(bindings);
+
+        assertThat(triggered, is(equalTo(true)));
+        assertThat(outcome, is(equalTo("outPatient")));
+        assertThat(rules.getFiredRule(), is(equalTo(rule1)));
     }
 }

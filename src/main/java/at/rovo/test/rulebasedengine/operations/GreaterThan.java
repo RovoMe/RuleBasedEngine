@@ -10,17 +10,17 @@ import at.rovo.test.rulebasedengine.type.Variable;
 import java.util.Map;
 import java.util.Stack;
 
-public class MoreEquals extends Operation
+public class GreaterThan extends Operation
 {    
-    public MoreEquals()
+    public GreaterThan()
     {
         super(">=");
     }
     
     @Override
-    public MoreEquals copy()
+    public GreaterThan copy()
     {
-        return new MoreEquals();
+        return new GreaterThan();
     }
     
     @Override
