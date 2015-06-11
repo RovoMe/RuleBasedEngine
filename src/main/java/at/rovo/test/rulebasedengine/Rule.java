@@ -16,6 +16,7 @@ import java.util.Map;
  */
 public class Rule
 {
+    private String name;
     private List<Expression> expressions;
     private ActionDispatcher dispatcher;
     
@@ -23,6 +24,7 @@ public class Rule
     {
         private List<Expression> expressions = new ArrayList<>();
         private ActionDispatcher dispatcher = new NullActionDispatcher();
+        private String name = "unknown";
         
         public Builder withExpression(Expression expr)
         {
@@ -42,16 +44,28 @@ public class Rule
             return this;
         }
         
+        public Builder withName(String name)
+        {
+            this.name = name;
+            return this;
+        }
+        
         public Rule build()
         {
-            return new Rule(expressions, dispatcher);
+            return new Rule(name, expressions, dispatcher);
         }
     }
     
-    private Rule(List<Expression> expressions, ActionDispatcher dispatcher)
+    private Rule(String name, List<Expression> expressions, ActionDispatcher dispatcher)
     {
+        this.name = name;
         this.expressions = expressions;
         this.dispatcher = dispatcher;
+    }
+        
+    public String getName()
+    {
+        return name;
     }
     
     public boolean eval(Map<String, ?> bindings)
@@ -67,5 +81,11 @@ public class Rule
             }
         }
         return result;
+    }
+    
+    @Override
+    public String toString() 
+    {
+        return name;
     }
 }

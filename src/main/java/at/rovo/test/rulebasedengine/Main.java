@@ -37,48 +37,40 @@ public class Main
         operations.registerOperation(new LessEquals());
         operations.registerOperation(new MoreEquals());
         operations.registerOperation(new NotEquals());
-        
-        /*
-        // defines the triggers when a rule should fire
-        Expression ex4 = ExpressionParser.fromString("PATIENT_TYPE != 'B' AND TEST_VALUE >= 5");
-        Expression ex5 = ExpressionParser.fromString("PATIENT_TYPE NOT EQUALS 'A' OR TEST_VALUE < 5");
-        Expression ex3 = ExpressionParser.fromString("PATIENT_TYPE = 'A' AND NOT ADMISSION_TYPE = 'O'");
-        Expression ex1 = ExpressionParser.fromString("PATIENT_TYPE = 'A' AND ADMISSION_TYPE = 'O'");
-        Expression ex2 = ExpressionParser.fromString("PATIENT_TYPE = 'B'");
-        */
-        
+
         // define the possible actions for rules that fire
         ActionDispatcher inPatient = new InPatientDispatcher();
         ActionDispatcher outPatient = new OutPatientDispatcher();
 
         // create the rules and link them to the accoridng expression and action
-        Rule rule4 = new Rule.Builder()
-                            //.withExpression(ex4)
-                            //.withExpression(ex5)
-                            .withExpression("PATIENT_TYPE != 'B' AND TEST_VALUE >= 5")
-                            .withExpression("PATIENT_TYPE NOT EQUALS 'A' OR TEST_VALUE < 5")
-                            .withDispatcher(inPatient)
-                            .build();
-        Rule rule3 = new Rule.Builder()
-                            .withExpression("PATIENT_TYPE = 'A' AND NOT ADMISSION_TYPE = 'O'")
-                            .withDispatcher(inPatient)
-                            .build();
         Rule rule1 = new Rule.Builder()
-                            .withExpression("PATIENT_TYPE = 'A' AND ADMISSION_TYPE = 'O'")
-                            .withDispatcher(outPatient)
-                            .build();
-        
+            .withName("rule1")
+            .withExpression("PATIENT_TYPE = 'A' AND ADMISSION_TYPE = 'O'")
+            .withDispatcher(outPatient)
+            .build();
         Rule rule2 = new Rule.Builder()
-                            .withExpression("PATIENT_TYPE = 'B'")
-                            .withDispatcher(inPatient)
-                            .build();
-        
+            .withName("rule2")
+            .withExpression("PATIENT_TYPE = 'B'")
+            .withDispatcher(inPatient)
+            .build();
+        Rule rule3 = new Rule.Builder()
+            .withName("rule3")
+            .withExpression("PATIENT_TYPE = 'A' AND NOT ADMISSION_TYPE = 'O'")
+            .withDispatcher(inPatient)
+            .build();
+        Rule rule4 = new Rule.Builder()
+            .withName("rule4")
+            .withExpression("PATIENT_TYPE != 'B' AND TEST_VALUE >= 5")
+            .withExpression("PATIENT_TYPE != 'A' OR TEST_VALUE < 5")
+            .withDispatcher(inPatient)
+            .build();
+
         // add all rules to a single container
         Rules rules = new Rules();
         rules.addRule(rule4);
-        rules.addRule(rule3);
         rules.addRule(rule1);
         rules.addRule(rule2);
+        rules.addRule(rule3);
         
         // for test purpose define a variable binding ...
         Map<String, Object> bindings = new HashMap<>();

@@ -15,6 +15,7 @@ import java.util.Map;
 public class Rules
 {
     private List<Rule> rules = new ArrayList<>();
+    private Rule firedRule = null;
     
     public Rules()
     {
@@ -35,8 +36,16 @@ public class Rules
             result = rule.eval(bindings);
             System.out.println("DEBUG: "+rule+" evaluate "+result);
             if (result)
+            {
+                firedRule = rule;
                 return true;
+            }
         }
         return false;
+    }
+    
+    public Rule getFiredRule()
+    {
+        return firedRule;
     }
 }
